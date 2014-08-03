@@ -1,0 +1,1 @@
+GOPATH=$GOPATH:/home/juno/git/common_redis_feeder/common_redis_feeder go test -v
