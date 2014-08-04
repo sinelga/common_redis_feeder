@@ -1,27 +1,18 @@
 package main
 
 import (
-	//	"bytes"
-	//	"domains"
-	//	"encoding/json"
+
 	"github.com/garyburd/redigo/redis"
 	"log"
 	"log/syslog"
 	"net"
 	"net/http"
 	"net/http/fcgi"
-	//	"net/url"
 	"bytes"
 	"time"
-	//	"errors"
-	//	"sync"
-	//	"firstrstart"
-	//	"strings"
+
 )
 
-//var startOnce sync.Once
-//var c redis.Conn
-//var rederr error
 
 type FastCGIServer struct{}
 
@@ -30,7 +21,7 @@ func newPool() *redis.Pool {
 		MaxIdle:     3,
 		IdleTimeout: 240 * time.Second,
 		Dial: func() (redis.Conn, error) {
-			c, err := redis.Dial("tcp", "104.131.209.134:6379")
+			c, err := redis.Dial("tcp", ":6379")
 			if err != nil {
 				return nil, err
 			}
@@ -57,9 +48,6 @@ func (s FastCGIServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 		log.Fatal("error writing syslog!!")
 	}
 
-	//	locale := req.Header.Get("X-LOCALE")
-	//	themes := req.Header.Get("X-THEMES")
-
 	callback := req.Header.Get("X-CALLBACK")
 	redisid := req.Header.Get("X-REDISID")
 
@@ -84,17 +72,18 @@ func feeder(golog syslog.Writer, resp http.ResponseWriter, req *http.Request, ca
 	c := pool.Get()
 	defer c.Close()
 
-
 	golog.Info("redisid " + redisid)
-	result, _ := redis.Bytes(c.Do("GET", redisid))
-	golog.Info(string(result))
 
-	var buffer bytes.Buffer
-	buffer.WriteString(callback + "(")
-	buffer.Write(result)
-	buffer.WriteString(");")
+	if redisid != "" && callback != "" {
+		result, _ := redis.Bytes(c.Do("GET", redisid))
+		golog.Info(string(result))
 
-	resp.Write(buffer.Bytes())
+		var buffer bytes.Buffer
+		buffer.WriteString(callback + "(")
+		buffer.Write(result)
+		buffer.WriteString(");")
 
+		resp.Write(buffer.Bytes())
+	}
 
 }
