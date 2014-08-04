@@ -10,7 +10,8 @@ import (
 	"net"
 	"net/http"
 	"net/http/fcgi"
-//	"net/url"
+	//	"net/url"
+	"bytes"
 	"time"
 	//	"errors"
 	//	"sync"
@@ -25,27 +26,26 @@ import (
 type FastCGIServer struct{}
 
 func newPool() *redis.Pool {
-    return &redis.Pool{
-        MaxIdle: 3,
-        IdleTimeout: 240 * time.Second,
-        Dial: func () (redis.Conn, error) {
-            c, err := redis.Dial("tcp", ":6379")
-            if err != nil {
-                return nil, err
-            }
+	return &redis.Pool{
+		MaxIdle:     3,
+		IdleTimeout: 240 * time.Second,
+		Dial: func() (redis.Conn, error) {
+			c, err := redis.Dial("tcp", "104.131.209.134:6379")
+			if err != nil {
+				return nil, err
+			}
 
-            return c, err
-        },
-        TestOnBorrow: func(c redis.Conn, t time.Time) error {
-            _, err := c.Do("PING")
-            return err
-        },
-    }
+			return c, err
+		},
+		TestOnBorrow: func(c redis.Conn, t time.Time) error {
+			_, err := c.Do("PING")
+			return err
+		},
+	}
 }
 
 var (
-    pool *redis.Pool
-	
+	pool *redis.Pool
 )
 
 func (s FastCGIServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
@@ -57,19 +57,18 @@ func (s FastCGIServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 		log.Fatal("error writing syslog!!")
 	}
 
-	locale := req.Header.Get("X-LOCALE")
-	themes := req.Header.Get("X-THEMES")
-	//	pathinfo := req.Header.Get("X-PATHINFO")
-//	pathinfoUrl := req.URL
+	//	locale := req.Header.Get("X-LOCALE")
+	//	themes := req.Header.Get("X-THEMES")
 
-	feeder(*golog, resp, req, locale, themes)
+	callback := req.Header.Get("X-CALLBACK")
+	redisid := req.Header.Get("X-REDISID")
+
+	feeder(*golog, resp, req, callback, redisid)
 
 }
 
 func main() {
 
-	log.Println("Server Start")
-	
 	pool = newPool()
 
 	listener, err := net.Listen("tcp", "127.0.0.1:8010")
@@ -80,67 +79,22 @@ func main() {
 	fcgi.Serve(listener, srv)
 }
 
-func feeder(golog syslog.Writer, resp http.ResponseWriter, req *http.Request, locale string, themes string) {
+func feeder(golog syslog.Writer, resp http.ResponseWriter, req *http.Request, callback string, redisid string) {
 
 	c := pool.Get()
-    defer c.Close()	
+	defer c.Close()
 
 
-	redisid := locale + ":" + themes
+	golog.Info("redisid " + redisid)
+	result, _ := redis.Bytes(c.Do("GET", redisid))
+	golog.Info(string(result))
 
-	if redisid == "en_US:finance" {
+	var buffer bytes.Buffer
+	buffer.WriteString(callback + "(")
+	buffer.Write(result)
+	buffer.WriteString(");")
 
-		golog.Info("redisid " + redisid)
-		//		c.Do("GET", redisid )
-		webstruct, _ := redis.Bytes(c.Do("GET", redisid))
-		golog.Info(string(webstruct))
+	resp.Write(buffer.Bytes())
 
-	}
 
-	//	webstruct, _ := redis.Bytes(c.Do("GET", redisid ))
-	//	c.Do("GET", redisid )
-	//
-	//	golog.Info(string(webstruct))
-
-	//	redisidconv := strings.Replace(redisid, "%3A", ":", -1)
-	//
-	//	golog.Info("redisid-> " + redisidconv)
-	//	c, err := redis.Dial("tcp", ":6379")
-	//	if err != nil {
-	//		log.Fatal(err)
-	//	}
-	//
-	//	if redisid == "" {
-	//
-	//		redisid = "it_IT:news:Home"
-	//
-	//	}
-	//
-	//	bitem, _ := redis.Strings(c.Do("ZREVRANGE", redisidconv, "0", "25"))
-	//
-	//	var itemsarr []domains.Item
-	//
-	//	for _, item := range bitem {
-	//
-	//		var itemobj domains.Item
-	//
-	//		b := []byte(item)
-	//		err := json.Unmarshal(b, &itemobj)
-	//		if err != nil {
-	//			log.Fatal(err)
-	//		}
-	//		itemsarr = append(itemsarr, itemobj)
-	//
-	//	}
-	//
-	//	bout, err := json.Marshal(itemsarr)
-	//	if err != nil {
-	//		log.Fatal(err)
-	//	}
-	//	var buffer bytes.Buffer
-	//	buffer.WriteString(callback + "(")
-	//	buffer.Write(bout)
-	//	buffer.WriteString(");")
-	//
-	//	resp.Write(buffer.Bytes())
 }
