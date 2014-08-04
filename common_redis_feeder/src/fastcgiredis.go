@@ -72,9 +72,10 @@ func feeder(golog syslog.Writer, resp http.ResponseWriter, req *http.Request, ca
 	c := pool.Get()
 	defer c.Close()
 
-	golog.Info("redisid " + redisid)
+	
 
 	if redisid != "" && callback != "" {
+		golog.Info("redisid " + redisid)
 		result, _ := redis.Bytes(c.Do("GET", redisid))
 		golog.Info(string(result))
 
