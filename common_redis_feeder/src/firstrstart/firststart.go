@@ -15,13 +15,20 @@ func FeedRedis(golog syslog.Writer, c redis.Conn) {
 
 	//	var c redis.Conn
 
-	var en_US_finance_menu = []domains.Menu{
+	var en_US_finance_menu_news = []domains.Menu{
 		{Menu: "Business", OrgLink: "http://feeds.reuters.com/reuters/businessNews", ParsLink: "http://feeds.reuters.com/reuters/businessNews"},
 		{Menu: "Most Read Articles", OrgLink: "http://feeds.reuters.com/reuters/MostRead", ParsLink: "http://feeds.reuters.com/reuters/MostRead"},
 	}
 
+	var en_US_finance_menu_markets = []domains.Menu{
+		{Menu: "Bankruptcy", OrgLink: "http://feeds.reuters.com/reuters/bankruptcyNews", ParsLink: "http://feeds.reuters.com/reuters/bankruptcyNews"},
+		{Menu: "Bonds", OrgLink: "http://feeds.reuters.com/reuters/bondsNews", ParsLink: "http://feeds.reuters.com/reuters/bondsNews"},
+	}	
+
+
 	var en_US_finance_tab = []domains.Tab{
-		{Tab: "News", Menus: en_US_finance_menu},
+		{Tab: "News", Menus: en_US_finance_menu_news},
+		{Tab: "Markets", Menus: en_US_finance_menu_markets},
 	}
 
 	var en_US_finance_localethemes = domains.LocaleThemes{Tabs: en_US_finance_tab}
