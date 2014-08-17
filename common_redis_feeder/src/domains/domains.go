@@ -31,6 +31,5 @@ type RssLink struct {
 	Redisid string
 	OrgLink string
 	LinktoParse string
-	
-	
+		
 }

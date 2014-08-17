@@ -5,9 +5,11 @@ import (
     "fmt"
     "log"
 	"log/syslog"
+	"github.com/garyburd/redigo/redis"
     "domains"
     "yqljsonparser"
     "parsebypath"
+    "redisin"
 )
 
 const APP_VERSION = "0.1"
@@ -30,6 +32,14 @@ func main() {
 		log.Fatal("error writing syslog!!")
 
 	}
+	
+	
+		c, err := redis.Dial("tcp", ":6379")
+	if err != nil {
+//		log.Fatal(err)
+		golog.Err(err.Error())
+	}
+	
     
   var rssLinks = []domains.RssLink {
   	
@@ -46,16 +56,18 @@ func main() {
   	for _,link := range arrlinks {
   		
   		
-  		fmt.Println(link)
-  		
   		xpath := []string{"//div[@class='relatedPhoto landscape']", "//span[@id='articleText']/p"}
+  		 		
+  		item := parsebypath.Parse(*golog,link,xpath)
   		
+  		fmt.Println(item.ImgLink)
+  		fmt.Println(item.Cont)
   		
-  		parsebypath.Parse(*golog,link,xpath) 		
+  		redisin.InsertIn(*golog, c,rsslink.Redisid,item )
+  		 		
   		
   	} 	
-  	
-  	
+  	  	
   }
     
     

@@ -1,20 +1,25 @@
 package yqljsonparser
 
 import (
-	//	"domains"
+	"domains"
 	"encoding/json"
+//	"fmt"
 	"io/ioutil"
 	"log/syslog"
 	"net/http"
-	"fmt"
 	"net/url"
+	"time"
 )
 
-func Parser(golog syslog.Writer, feedLink string) []string {
+func Parser(golog syslog.Writer, feedLink string) []domains.Item {
 
 	client := &http.Client{}
-	
-	var retarr []string
+
+//	var retarr []string
+	var itemsarr []domains.Item
+	var pubDate time.Time
+	var content_link string
+	var title string
 
 	req, err := http.NewRequest("GET", feedLink, nil)
 	if err != nil {
@@ -48,11 +53,17 @@ func Parser(golog syslog.Writer, feedLink string) []string {
 	for _, item := range items {
 
 		item_interface := item.(map[string]interface{})
-		
-		title := item_interface["title"].(string)
+
+		title = item_interface["title"].(string)
 		pubDateStr := item_interface["pubDate"].(string)
-		
-		fmt.Println(pubDateStr +"--"+title)
+
+		pubDate, err = time.Parse(time.RFC1123, pubDateStr)
+		if err != nil {
+			golog.Err(err.Error())
+
+		}
+//		fmt.Println(pubDate)
+//		fmt.Println("--" + title)
 
 		guid_interface := item_interface["guid"].(map[string]interface{})
 
@@ -63,11 +74,24 @@ func Parser(golog syslog.Writer, feedLink string) []string {
 			golog.Err(err.Error())
 		} else {
 
-			content_link := u.Scheme + "://" + u.Host + u.Path
-
-			retarr = append(retarr,content_link)
+			content_link = u.Scheme + "://" + u.Host + u.Path
 
 		}
+		
+		if content_link !="" {
+			
+			var itemtmp domains.Item
+			
+			itemtmp.PubDate = pubDate
+			itemtmp.Title =title
+			itemtmp.Link = content_link
+			
+			itemsarr = append(itemsarr,itemtmp) 
+						
+			
+		}
+		
+		
 
 	}
 
@@ -145,6 +169,6 @@ func Parser(golog syslog.Writer, feedLink string) []string {
 	//
 	//	}
 	//
-		return retarr
+	return itemsarr
 
 }

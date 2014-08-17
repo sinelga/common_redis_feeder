@@ -1,18 +1,20 @@
 package main
 
 import (
-
+	"bytes"
+	//	"domains"
 	"github.com/garyburd/redigo/redis"
 	"log"
 	"log/syslog"
 	"net"
 	"net/http"
 	"net/http/fcgi"
-	"bytes"
 	"time"
-
+	//	"bytes"
+	//	"encoding/json"
+//	"fmt"
+	"strings"
 )
-
 
 type FastCGIServer struct{}
 
@@ -72,19 +74,33 @@ func feeder(golog syslog.Writer, resp http.ResponseWriter, req *http.Request, ca
 	c := pool.Get()
 	defer c.Close()
 
-	
-
 	if redisid != "" && callback != "" {
-		golog.Info("redisid " + redisid)
-		result, _ := redis.Bytes(c.Do("GET", redisid))
-		golog.Info(string(result))
 
-		var buffer bytes.Buffer
-		buffer.WriteString(callback + "(")
-		buffer.Write(result)
-		buffer.WriteString(");")
+		if strings.Index(redisid, ":news") > -1 {
 
-		resp.Write(buffer.Bytes())
+			result, _ := redis.Strings(c.Do("ZREVRANGE", redisid, "0", "25"))
+
+			var buffer bytes.Buffer
+			buffer.WriteString(callback + "(")
+			for _, strResult := range result {
+				buffer.WriteString(strResult)
+			}
+			buffer.WriteString(");")
+			//
+			resp.Write(buffer.Bytes())
+
+		} else {
+			golog.Info("redisid " + redisid)
+			result, _ := redis.Bytes(c.Do("GET", redisid))
+			golog.Info(string(result))
+
+			var buffer bytes.Buffer
+			buffer.WriteString(callback + "(")
+			buffer.Write(result)
+			buffer.WriteString(");")
+
+			resp.Write(buffer.Bytes())
+		}
 	}
 
 }

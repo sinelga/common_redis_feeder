@@ -1,20 +1,20 @@
 package parsebypath
 
 import (
-	//	"domains"
+	"domains"
 	"github.com/moovweb/gokogiri"
 	"io/ioutil"
 	"log/syslog"
 	"net/http"
 	//	"strings"
-	"fmt"
+//	"fmt"
 )
 
-func Parse(golog syslog.Writer, link string, xpath []string) {
+func Parse(golog syslog.Writer, item domains.Item, xpath []string) domains.Item {
 
 	client := &http.Client{}
 
-	req, err := http.NewRequest("GET", link, nil)
+	req, err := http.NewRequest("GET", item.Link, nil)
 	if err != nil {
 		golog.Err(err.Error())
 
@@ -45,7 +45,8 @@ func Parse(golog syslog.Writer, link string, xpath []string) {
 		} else {
 			imglink := res2[0].Attr("src")
 
-			fmt.Println(imglink)
+//			fmt.Println(imglink)
+			item.ImgLink = imglink
 
 		}
 
@@ -53,11 +54,27 @@ func Parse(golog syslog.Writer, link string, xpath []string) {
 
 	res, _ = doc.Search(xpath[1])
 
-	for _, itemdom := range res {
+	var content string
 
-		fmt.Println(itemdom.Content())
+	for i, itemdom := range res {
+
+//		fmt.Println(itemdom.Content())
+
+		if i == 0 {
+
+			content = itemdom.Content()
+
+		} else {
+
+			content = content + " " + itemdom.Content()
+
+		}
+
+		item.Cont = content 
 
 	}
+	
+	return item
 
 	//	var redisidItemsarrret []domains.RedisidItems
 	//
