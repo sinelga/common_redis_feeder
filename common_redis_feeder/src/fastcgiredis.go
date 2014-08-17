@@ -81,11 +81,11 @@ func feeder(golog syslog.Writer, resp http.ResponseWriter, req *http.Request, ca
 			result, _ := redis.Strings(c.Do("ZREVRANGE", redisid, "0", "25"))
 
 			var buffer bytes.Buffer
-			buffer.WriteString(callback + "(")
+			buffer.WriteString(callback + "([")
 			for _, strResult := range result {
 				buffer.WriteString(strResult)
 			}
-			buffer.WriteString(");")
+			buffer.WriteString("]);")
 			//
 			resp.Write(buffer.Bytes())
 
