@@ -76,9 +76,8 @@ func feeder(golog syslog.Writer, resp http.ResponseWriter, req *http.Request, ca
 
 	if redisid != "" && callback != "" {
 
-					var buffer bytes.Buffer
-			buffer.WriteString(callback + "(")
-
+		var buffer bytes.Buffer
+		buffer.WriteString(callback + "(")
 
 		if strings.Index(redisid, ":news") > -1 {
 
@@ -103,34 +102,18 @@ func feeder(golog syslog.Writer, resp http.ResponseWriter, req *http.Request, ca
 			if err != nil {
 				log.Fatal(err)
 			}
-//			var buffer bytes.Buffer
-//			buffer.WriteString(callback + "(")
+
 			buffer.Write(bout)
-//			buffer.WriteString(");")
-//			resp.Write(buffer.Bytes())
 
 		} else {
-			
-//			golog.Info("redisid " + redisid)
+
 			result, _ := redis.Bytes(c.Do("GET", redisid))
-//			//			golog.Info(string(result))
-//			var buffer bytes.Buffer
-//			buffer.WriteString(callback + "(")
 			buffer.Write(result)
-//			buffer.WriteString(");")
-//			resp.Write(buffer.Bytes())
 
 		}
-					buffer.WriteString(");")
-			resp.Write(buffer.Bytes())
-		
-		
-		//		var buffer bytes.Buffer
-		//		buffer.WriteString(callback + "(")
-		//		buffer.Write(result)
-		//		buffer.WriteString(");")
-		//
-		//		resp.Write(buffer.Bytes())
+		buffer.WriteString(");")
+		resp.Write(buffer.Bytes())
+
 	}
 
 }
