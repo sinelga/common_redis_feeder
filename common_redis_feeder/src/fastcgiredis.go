@@ -2,7 +2,7 @@ package main
 
 import (
 	"bytes"
-	//	"domains"
+	"domains"
 	"github.com/garyburd/redigo/redis"
 	"log"
 	"log/syslog"
@@ -11,8 +11,8 @@ import (
 	"net/http/fcgi"
 	"time"
 	//	"bytes"
-	//	"encoding/json"
-//	"fmt"
+	"encoding/json"
+	//	"fmt"
 	"strings"
 )
 
@@ -80,12 +80,36 @@ func feeder(golog syslog.Writer, resp http.ResponseWriter, req *http.Request, ca
 
 			result, _ := redis.Strings(c.Do("ZREVRANGE", redisid, "0", "25"))
 
-			var buffer bytes.Buffer
-			buffer.WriteString(callback + "([")
-			for _, strResult := range result {
-				buffer.WriteString(strResult)
+			//			var buffer bytes.Buffer
+			//			buffer.WriteString(callback + "([")
+			//			for _, strResult := range result {
+			//				buffer.WriteString(strResult)
+			//			}
+			//			buffer.WriteString("]);")
+			var itemsarr []domains.Item
+
+			for _, item := range result {
+
+				var itemobj domains.Item
+
+				b := []byte(item)
+				err := json.Unmarshal(b, &itemobj)
+				if err != nil {
+					log.Fatal(err)
+				}
+				itemsarr = append(itemsarr, itemobj)
+
 			}
-			buffer.WriteString("]);")
+
+			bout, err := json.Marshal(itemsarr)
+			if err != nil {
+				log.Fatal(err)
+			}
+			var buffer bytes.Buffer
+			buffer.WriteString(callback + "(")
+			buffer.Write(bout)
+			buffer.WriteString(");")
+
 			//
 			resp.Write(buffer.Bytes())
 
