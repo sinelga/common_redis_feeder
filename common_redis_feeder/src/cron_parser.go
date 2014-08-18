@@ -60,7 +60,7 @@ func main() {
 			item := parsebypath.Parse(*golog, link, xpath)
 
 			fmt.Println(item.ImgLink)
-			fmt.Println(item.Cont)
+//			fmt.Println(item.Cont)
 
 			if item.ImgLink != "" {
 
