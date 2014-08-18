@@ -20,6 +20,7 @@ func FeedRedis(golog syslog.Writer, c redis.Conn) {
 		{Menu: "Business Travel", OrgLink: "http://feeds.reuters.com/ReutersBusinessTravel", ParsLink: "en_US:finance:news:businesstravel"},
 		{Menu: "Company News", OrgLink: "http://feeds.reuters.com/reuters/companyNews", ParsLink: "en_US:finance:news:companynews"},
 		{Menu: "Entertainment", OrgLink: "http://feeds.reuters.com/reuters/entertainment", ParsLink: "en_US:finance:news:entertainment"},
+		{Menu: "Environment", OrgLink: "http://feeds.reuters.com/reuters/environment", ParsLink: "en_US:finance:news:environment"},
 		{Menu: "Most Read Articles", OrgLink: "http://feeds.reuters.com/reuters/MostRead", ParsLink: "en_US:finance:news:mostread"},
 	}
 
