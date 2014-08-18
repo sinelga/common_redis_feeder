@@ -57,17 +57,10 @@ func Parser(golog syslog.Writer, feedLink string) []domains.Item {
 
 		title = item_interface["title"].(string)
 		pubDateStr := item_interface["pubDate"].(string)
-		
-//		if !strings.HasSuffix(pubDateStr,"GMT") {
-//			
-//			pubDateStr = pubDateStr +" MST"
-//			
-//		} 
-		
 
 		pubDate, err = time.Parse(time.RFC1123, pubDateStr)
 		if err != nil {
-			golog.Err(err.Error())
+//			golog.Err(err.Error())
 			
 			pubDate, err = time.Parse(time.RFC1123Z, pubDateStr)
 			if err != nil {
