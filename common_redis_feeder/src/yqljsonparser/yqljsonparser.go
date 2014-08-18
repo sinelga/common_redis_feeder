@@ -60,7 +60,7 @@ func Parser(golog syslog.Writer, feedLink string) []domains.Item {
 		
 		if !strings.HasSuffix(pubDateStr,"GMT") {
 			
-			pubDateStr = pubDateStr +" GMT"
+			pubDateStr = pubDateStr +" MST"
 			
 		} 
 		
