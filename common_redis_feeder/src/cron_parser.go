@@ -43,6 +43,9 @@ func main() {
 
 		{Redisid: "en_US:finance:news:business", OrgLink: "select * from rss where url = 'http://feeds.reuters.com/reuters/businessNews'", LinktoParse: "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20rss%20where%20url%20%3D%20%22http%3A%2F%2Ffeeds.reuters.com%2Freuters%2FbusinessNews%22&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys"},
 		{Redisid: "en_US:finance:news:mostread", OrgLink: "select * from rss where url = 'http://feeds.reuters.com/reuters/MostRead'", LinktoParse: "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20rss%20where%20url%20%3D%20'http%3A%2F%2Ffeeds.reuters.com%2Freuters%2FMostRead'&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys"},
+		{Redisid: "en_US:finance:markets:bankruptcy", OrgLink: "select * from rss where url = 'http://feeds.reuters.com/reuters/bankruptcyNews'", LinktoParse: "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20rss%20where%20url%20%3D%20'http%3A%2F%2Ffeeds.reuters.com%2Freuters%2FbankruptcyNews'&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys"},
+		{Redisid: "en_US:finance:markets:bonds", OrgLink: "select * from rss where url = 'http://feeds.reuters.com/reuters/bondsNews'", LinktoParse: "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20rss%20where%20url%20%3D%20'http%3A%2F%2Ffeeds.reuters.com%2Freuters%2FbondsNews'&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys"},
+	
 	}
 
 	for _, rsslink := range rssLinks {

@@ -13,16 +13,15 @@ import (
 
 func FeedRedis(golog syslog.Writer, c redis.Conn) {
 
-	//	var c redis.Conn
 
 	var en_US_finance_menu_news = []domains.Menu{
-		{Menu: "Business", OrgLink: "http://feeds.reuters.com/reuters/businessNews", ParsLink: "http://feeds.reuters.com/reuters/businessNews"},
-		{Menu: "Most Read Articles", OrgLink: "http://feeds.reuters.com/reuters/MostRead", ParsLink: "http://feeds.reuters.com/reuters/MostRead"},
+		{Menu: "Business", OrgLink: "http://feeds.reuters.com/reuters/businessNews", ParsLink: "en_US:finance:news:business"},
+		{Menu: "Most Read Articles", OrgLink: "http://feeds.reuters.com/reuters/MostRead", ParsLink: "en_US:finance:news:mostread"},
 	}
 
 	var en_US_finance_menu_markets = []domains.Menu{
-		{Menu: "Bankruptcy", OrgLink: "http://feeds.reuters.com/reuters/bankruptcyNews", ParsLink: "http://feeds.reuters.com/reuters/bankruptcyNews"},
-		{Menu: "Bonds", OrgLink: "http://feeds.reuters.com/reuters/bondsNews", ParsLink: "http://feeds.reuters.com/reuters/bondsNews"},
+		{Menu: "Bankruptcy", OrgLink: "http://feeds.reuters.com/reuters/bankruptcyNews", ParsLink: "en_US:finance:markets:bankruptcy"},
+		{Menu: "Bonds", OrgLink: "http://feeds.reuters.com/reuters/bondsNews", ParsLink: "en_US:finance:markets:bonds"},
 	}	
 
 
@@ -39,48 +38,10 @@ func FeedRedis(golog syslog.Writer, c redis.Conn) {
 		golog.Crit(err.Error())
 	}
 
-	//	if c, err = redis.Dial("tcp", ":6379"); err != nil {
-	//
-	//		golog.Crit(err.Error())
-	////		return nil
-	//	} else {
 
 	if _, err := c.Do("SET", "en_US:finance", b); err != nil {
 
 		golog.Crit(err.Error())
 	}
 
-	//		const jsonStream = `{"locale": "en_US", "themes": "finance",[{"tab":"News",[{"menu":"Business"},{"menu":"Most Read Articles"}]]}}`
-
-	//		db, err := sql.Open("sqlite3", "/home/juno/git/common_redis_feeder/common_redis_feeder/firststart.db")
-	//		if err != nil {
-	//			golog.Crit(err.Error())
-	//		}
-	//
-	//		sqlstr := "select locale,themes,menu from menu"
-	//
-	//		rows, err := db.Query(sqlstr)
-	//		if err != nil {
-	//
-	//			golog.Crit(err.Error())
-	//		}
-	//		defer rows.Close()
-	//
-	//		for rows.Next() {
-	//			var locale string
-	//			var themes string
-	//			var menu string
-	//			rows.Scan(&locale, &themes, &menu)
-	//			golog.Info(locale + themes + menu)
-	//
-	//			redisid :=locale+":"+themes+":"+menu
-	//
-	//
-	//		}
-	//		rows.Close()
-
-	//		return c
-	//
-	//	}
-	//	return c
 }
