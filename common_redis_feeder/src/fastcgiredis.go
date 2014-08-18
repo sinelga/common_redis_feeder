@@ -13,7 +13,7 @@ import (
 	//	"bytes"
 	"encoding/json"
 	//	"fmt"
-	"strings"
+//	"strings"
 )
 
 type FastCGIServer struct{}
@@ -52,8 +52,9 @@ func (s FastCGIServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 
 	callback := req.Header.Get("X-CALLBACK")
 	redisid := req.Header.Get("X-REDISID")
+	redisdo := req.Header.Get("X-REDISDO")
 
-	feeder(*golog, resp, req, callback, redisid)
+	feeder(*golog, resp, req, callback, redisid,redisdo)
 
 }
 
@@ -69,17 +70,17 @@ func main() {
 	fcgi.Serve(listener, srv)
 }
 
-func feeder(golog syslog.Writer, resp http.ResponseWriter, req *http.Request, callback string, redisid string) {
+func feeder(golog syslog.Writer, resp http.ResponseWriter, req *http.Request, callback string, redisid string,redisdo string) {
 
 	c := pool.Get()
 	defer c.Close()
 
-	if redisid != "" && callback != "" {
+	if redisid != "" && callback != "" && redisdo !="" {
 
 		var buffer bytes.Buffer
 		buffer.WriteString(callback + "(")
 
-		if strings.Index(redisid, ":news") > -1 {
+		if redisdo == "ZREVRANGE" {
 
 			result, _ := redis.Strings(c.Do("ZREVRANGE", redisid, "0", "25"))
 
@@ -107,7 +108,7 @@ func feeder(golog syslog.Writer, resp http.ResponseWriter, req *http.Request, ca
 
 		} else {
 
-			result, _ := redis.Bytes(c.Do("GET", redisid))
+			result, _ := redis.Bytes(c.Do(redisdo, redisid))
 			buffer.Write(result)
 
 		}
