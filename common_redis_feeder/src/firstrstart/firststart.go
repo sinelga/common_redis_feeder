@@ -15,6 +15,7 @@ func FeedRedis(golog syslog.Writer, c redis.Conn) {
 
 
 	var en_US_finance_menu_news = []domains.Menu{
+		{Menu: "Art", OrgLink: "http://feeds.reuters.com/news/artsculture", ParsLink: "en_US:finance:news:art"},
 		{Menu: "Business", OrgLink: "http://feeds.reuters.com/reuters/businessNews", ParsLink: "en_US:finance:news:business"},
 		{Menu: "Most Read Articles", OrgLink: "http://feeds.reuters.com/reuters/MostRead", ParsLink: "en_US:finance:news:mostread"},
 	}
