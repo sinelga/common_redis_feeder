@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"net/url"
 	"time"
-	"strings"
+//	"strings"
 )
 
 func Parser(golog syslog.Writer, feedLink string) []domains.Item {
@@ -58,16 +58,24 @@ func Parser(golog syslog.Writer, feedLink string) []domains.Item {
 		title = item_interface["title"].(string)
 		pubDateStr := item_interface["pubDate"].(string)
 		
-		if !strings.HasSuffix(pubDateStr,"GMT") {
-			
-			pubDateStr = pubDateStr +" MST"
-			
-		} 
+//		if !strings.HasSuffix(pubDateStr,"GMT") {
+//			
+//			pubDateStr = pubDateStr +" MST"
+//			
+//		} 
 		
 
 		pubDate, err = time.Parse(time.RFC1123, pubDateStr)
 		if err != nil {
 			golog.Err(err.Error())
+			
+			pubDate, err = time.Parse(time.RFC1123Z, pubDateStr)
+			if err != nil {
+				
+				golog.Err(err.Error())	
+				
+			}
+			
 
 		}
 
