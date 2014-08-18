@@ -76,16 +76,14 @@ func feeder(golog syslog.Writer, resp http.ResponseWriter, req *http.Request, ca
 
 	if redisid != "" && callback != "" {
 
+					var buffer bytes.Buffer
+			buffer.WriteString(callback + "(")
+
+
 		if strings.Index(redisid, ":news") > -1 {
 
 			result, _ := redis.Strings(c.Do("ZREVRANGE", redisid, "0", "25"))
 
-			//			var buffer bytes.Buffer
-			//			buffer.WriteString(callback + "([")
-			//			for _, strResult := range result {
-			//				buffer.WriteString(strResult)
-			//			}
-			//			buffer.WriteString("]);")
 			var itemsarr []domains.Item
 
 			for _, item := range result {
@@ -105,26 +103,34 @@ func feeder(golog syslog.Writer, resp http.ResponseWriter, req *http.Request, ca
 			if err != nil {
 				log.Fatal(err)
 			}
-			var buffer bytes.Buffer
-			buffer.WriteString(callback + "(")
+//			var buffer bytes.Buffer
+//			buffer.WriteString(callback + "(")
 			buffer.Write(bout)
-			buffer.WriteString(");")
-
-			//
-			resp.Write(buffer.Bytes())
+//			buffer.WriteString(");")
+//			resp.Write(buffer.Bytes())
 
 		} else {
-			golog.Info("redisid " + redisid)
+			
+//			golog.Info("redisid " + redisid)
 			result, _ := redis.Bytes(c.Do("GET", redisid))
-			golog.Info(string(result))
-
-			var buffer bytes.Buffer
-			buffer.WriteString(callback + "(")
+//			//			golog.Info(string(result))
+//			var buffer bytes.Buffer
+//			buffer.WriteString(callback + "(")
 			buffer.Write(result)
-			buffer.WriteString(");")
+//			buffer.WriteString(");")
+//			resp.Write(buffer.Bytes())
 
-			resp.Write(buffer.Bytes())
 		}
+					buffer.WriteString(");")
+			resp.Write(buffer.Bytes())
+		
+		
+		//		var buffer bytes.Buffer
+		//		buffer.WriteString(callback + "(")
+		//		buffer.Write(result)
+		//		buffer.WriteString(");")
+		//
+		//		resp.Write(buffer.Bytes())
 	}
 
 }
