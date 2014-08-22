@@ -5,7 +5,12 @@ import (
 	"github.com/garyburd/redigo/redis"
 	"log"
 	"log/syslog"
+	"flag"
 )
+
+var localeFlag = flag.String("locale", "", "must be fi_FI/en_US/it_IT")
+var themesFlag = flag.String("themes", "", "must be porno/finance/fortune...")
+
 
 func main() {
 
@@ -16,6 +21,13 @@ func main() {
 		log.Fatal("error writing syslog!!")
 	}
 
+if *localeFlag == "" || *themesFlag == "" {
+	
+	golog.Err("tabmenufeedup check parameters")
+	
+} else {
+
+
 	if c, err := redis.Dial("tcp", ":6379"); err != nil {
 
 		golog.Crit(err.Error())
@@ -23,9 +35,11 @@ func main() {
 	} else {
 		
 		
-		firstrstart.FeedRedis(*golog,c)
+		firstrstart.FeedRedis(*golog,c,*localeFlag,*themesFlag)
 		
 		
+	}
+	
 	}
 
 }
