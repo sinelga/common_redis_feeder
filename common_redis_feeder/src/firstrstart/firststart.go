@@ -19,7 +19,7 @@ func FeedRedis(golog syslog.Writer, c redis.Conn, locale string, themes string) 
 		golog.Crit(err.Error())
 	}
 
-	sqlstr := "select Tab,Menu,Redisid from feedlinks where Locale='" + locale + "' and Themes='" + themes + "'"
+	sqlstr := "select Tab,Menu,Redisid from feedlinks where Locale='" + locale + "' and Themes='" + themes + "' order by Tab"
 
 	rows, err := db.Query(sqlstr)
 	if err != nil {
